@@ -83,6 +83,11 @@ void write_biases(const char* filepath, NeuronLayer* layer);
 void read_weights(const char* filepath, ConnectionLayer* layer);
 void read_biases(const char* filepath, const NeuronLayer* layer);
 
-void feedforward(NeuralNet* neural_net, double input[LAYER_1]);
+int feedforward(NeuralNet* neural_net, double input[LAYER_1]);
+void propagate(NeuronLayer* lhs, ConnectionLayer* conn,  NeuronLayer* rhs);
+
+void back_propagate(NeuralNet* neural_net, int expected_value);
+
+double cost_function(NeuralNet* neural_net, int expected_value);
 
 #endif //NEURAL_NET_H

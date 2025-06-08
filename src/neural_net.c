@@ -3,7 +3,11 @@
 //
 #include <stdlib.h>
 
-#include "../include/neural_net.h"
+#include "neural_net.h"
+
+#include <math.h>
+
+#include "calculations.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -194,7 +198,79 @@ void read_biases(const char* filepath, const NeuronLayer* layer)
     fclose(file);
 }
 
-void feedforward(NeuralNet* neural_net, double input[LAYER_1])
+int feedforward(NeuralNet* neural_net, double input[LAYER_1])
+{
+    for (int i = 0; i < LAYER_1; i++)
+    {
+        neural_net->layer1->neuronArray[i]->activation = input[i];
+    }
+    propagate(neural_net->layer1, neural_net->connection1_2, neural_net->layer2);
+    propagate(neural_net->layer2, neural_net->connection2_3, neural_net->layer3);
+    propagate(neural_net->layer3, neural_net->connection3_4, neural_net->layer4);
+
+    int index = 0;
+    int max = 0;
+    for (int i = 0; i < LAYER_4; i++)
+    {
+        if (max < neural_net->layer4->neuronArray[i]->activation)
+        {
+            max = neural_net->layer4->neuronArray[i]->activation;
+            index = i;
+        }
+    }
+    return index;
+}
+
+
+void propagate(NeuronLayer* lhs, ConnectionLayer* conn, NeuronLayer* rhs)
+{
+    // MATRIX (weights) * activations + bias -> sigmoid (holy fucking shit is this exhausting)
+    double* activation_vector = malloc(sizeof(double) * lhs->size);
+    for (int i = 0; i < lhs->size; i++)
+    {
+        activation_vector[i] = lhs->neuronArray[i]->activation;
+    }
+
+    double* weight_matrix = malloc(sizeof(double) * conn->size);
+    for (int i = 0; i < conn->size; i++)
+    {
+        weight_matrix[i] = conn->connectionArray[i]->weight;
+    }
+    double* result_vector = malloc(sizeof(double) * rhs->size);
+
+    for (int i = 0; i < rhs->size; i++)
+    {
+        double sum = 0;
+        for (int j = 0; j < lhs->size; j++)
+        {
+            sum += activation_vector[j] * weight_matrix[lhs->size*i + j];
+        }
+        result_vector[i] = sum + rhs->neuronArray[i]->bias;
+    }
+    for (int i = 0; i < rhs->size; i++)
+    {
+        rhs->neuronArray[i]->activation = sigmoid(result_vector[i]);
+    }
+    free(result_vector);
+    free(weight_matrix);
+    free(activation_vector);
+}
+
+double cost_function(NeuralNet* neural_net, int expected_value)
+{
+    double sum = 0;
+    for (int i = 0; i < LAYER_4; i++)
+    {
+        if (i == expected_value)
+        {
+            sum += (neural_net->layer4->neuronArray[i]->activation - 1)*(neural_net->layer4->neuronArray[i]->activation - 1);
+        }
+        else sum += neural_net->layer4->neuronArray[i]->activation*neural_net->layer4->neuronArray[i]->activation;
+    }
+    return sum;
+}
+
+void back_propagate(NeuralNet* neural_net, int expected_value)
 {
 
 }
