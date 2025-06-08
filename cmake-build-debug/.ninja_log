@@ -8,3 +8,9 @@
 18	35	1749390650327166684	c_number_nn	91d4ab95895be5a5
 1	22	1749391365904356792	CMakeFiles/c_number_nn.dir/src/neural_net.c.o	bd3ba3e63b2e4d6b
 22	40	1749391365925356593	c_number_nn	91d4ab95895be5a5
+1	16	1749396552070932701	CMakeFiles/c_number_nn.dir/src/main.c.o	65af93ae66596c9b
+0	17	1749396552069932706	CMakeFiles/c_number_nn.dir/src/calculations.c.o	a6c4ebf988ff464a
+1	39	1749396552070932701	CMakeFiles/c_number_nn.dir/src/neural_net.c.o	bd3ba3e63b2e4d6b
+39	59	1749396552108932516	c_number_nn	91d4ab95895be5a5
+1	25	1749396579800796089	CMakeFiles/c_number_nn.dir/src/neural_net.c.o	bd3ba3e63b2e4d6b
+25	43	1749396579824795970	c_number_nn	91d4ab95895be5a5

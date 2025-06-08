@@ -6,6 +6,6 @@
 #define CALCULATIONS_H
 
 
-double sigmoid(double x);
+double sigmoid(const double x);
 
 #endif //CALCULATIONS_H

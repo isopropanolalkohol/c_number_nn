@@ -4,7 +4,7 @@
 #include "../include/calculations.h"
 #include <math.h>
 
-double sigmoid(double x)
+double sigmoid(const double x)
 {
     return 1 / (1 + exp(-x));
 }

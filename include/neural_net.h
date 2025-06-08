@@ -9,7 +9,15 @@
 #define LAYER_2 64
 #define LAYER_3 32
 #define LAYER_4 10
-#define FILEPATH "../assets/weights_biases.txt"
+
+#define FILEPATH_CONNLAYER1 "../assets/weights_biases/weights_connlayer1.txt"
+#define FILEPATH_CONNLAYER2 "../assets/weights_biases/weights_connlayer2.txt"
+#define FILEPATH_CONNLAYER3 "../assets/weights_biases/weights_connlayer3.txt"
+
+// NEUR_LAYER1 is used for input
+#define FILEPATH_NEURLAYER2 "../assets/weights_biases/biases_neurlayer2.txt"
+#define FILEPATH_NEURLAYER3 "../assets/weights_biases/biases_neurlayer3.txt"
+#define FILEPATH_NEURLAYER4 "../assets/weights_biases/biases_neurlayer4.txt"
 
 struct Connection;
 struct Neuron;
@@ -41,6 +49,7 @@ typedef struct ConnectionLayer
 {
     Connection** connectionArray;
     int size;
+    int input_size;
 } ConnectionLayer;
 
 
@@ -56,8 +65,8 @@ typedef struct NeuralNetwork
 } NeuralNet;
 
 NeuralNet* instantiate_neural_net();
-void load_wb(NeuralNet* neural_net, const char* filepath);
-void save_wb(NeuralNet* neural_net, const char* filepath);
+void load_wb(NeuralNet* neural_net);
+void save_wb(NeuralNet* neural_net);
 void close_neural_net(NeuralNet* neural_net);
 
 
@@ -66,5 +75,12 @@ void free_connection_layer(ConnectionLayer* layer);
 
 NeuronLayer* instantiate_neuron_layer(const int neuronCount);
 void free_neuron_layer(NeuronLayer* layer);
+
+
+void write_weights(const char* filepath, ConnectionLayer* layer);
+void write_biases(const char* filepath, NeuronLayer* layer);
+
+void read_weights(const char* filepath, ConnectionLayer* layer);
+void read_biases(const char* filepath, const NeuronLayer* layer);
 
 #endif //NEURAL_NET_H
