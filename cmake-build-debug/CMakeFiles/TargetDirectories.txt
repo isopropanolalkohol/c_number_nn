@@ -1,0 +1,3 @@
+/home/joshua/Programmieren/C/c_number_nn/cmake-build-debug/CMakeFiles/c_number_nn.dir
+/home/joshua/Programmieren/C/c_number_nn/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/joshua/Programmieren/C/c_number_nn/cmake-build-debug/CMakeFiles/rebuild_cache.dir
