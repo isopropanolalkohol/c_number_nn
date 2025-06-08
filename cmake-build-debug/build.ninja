@@ -89,6 +89,7 @@ build c_number_nn: C_EXECUTABLE_LINKER__c_number_nn_Debug CMakeFiles/c_number_nn
   DEP_FILE = CMakeFiles/c_number_nn.dir/link.d
   FLAGS = -g
   LINK_FLAGS = -Wl,--dependency-file=CMakeFiles/c_number_nn.dir/link.d
+  LINK_LIBRARIES = -lm
   OBJECT_DIR = CMakeFiles/c_number_nn.dir
   POST_BUILD = :
   PRE_LINK = :

@@ -5,7 +5,6 @@
 #ifndef CALCULATIONS_H
 #define CALCULATIONS_H
 
-#include <math.h>
 
 double sigmoid(double x);
 

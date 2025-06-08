@@ -8,3 +8,4 @@ file(GLOB SOURCES "src/*.c")
 add_executable(c_number_nn ${SOURCES})
 
 target_include_directories(c_number_nn PRIVATE include)
+target_link_libraries(c_number_nn m)

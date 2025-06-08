@@ -1,0 +1,10 @@
+# ninja log v6
+1	26	1749390414700297261	CMakeFiles/c_number_nn.dir/src/neural_net.c.o	bd3ba3e63b2e4d6b
+1	19	1749390443358195045	CMakeFiles/c_number_nn.dir/src/calculations.c.o	a6c4ebf988ff464a
+1	17	1749390414700297261	CMakeFiles/c_number_nn.dir/src/main.c.o	65af93ae66596c9b
+1	11	1749390414700297261	CMakeFiles/c_number_nn.dir/src/app.c.o	5415d41c421225f6
+0	16	1749390650305166816	build.ninja	5b865c2d540c345c
+0	18	1749390650309166792	CMakeFiles/c_number_nn.dir/src/calculations.c.o	a6c4ebf988ff464a
+18	35	1749390650327166684	c_number_nn	91d4ab95895be5a5
+1	22	1749391365904356792	CMakeFiles/c_number_nn.dir/src/neural_net.c.o	bd3ba3e63b2e4d6b
+22	40	1749391365925356593	c_number_nn	91d4ab95895be5a5
