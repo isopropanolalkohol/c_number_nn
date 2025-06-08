@@ -12,6 +12,7 @@
 		[
 			"add_executable",
 			"target_link_libraries",
+			"include_directories",
 			"target_include_directories"
 		],
 		"files" : 
@@ -26,19 +27,25 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 8,
+				"line" : 12,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 11,
+				"line" : 15,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
 				"line" : 10,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 14,
 				"parent" : 0
 			}
 		]
@@ -56,6 +63,10 @@
 			[
 				{
 					"backtrace" : 3,
+					"path" : "/usr/include/SDL2"
+				},
+				{
+					"backtrace" : 4,
 					"path" : "/home/joshua/Programmieren/C/c_number_nn/include"
 				}
 			],
@@ -93,6 +104,11 @@
 			{
 				"backtrace" : 2,
 				"fragment" : "-lm",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-lSDL2",
 				"role" : "libraries"
 			}
 		],

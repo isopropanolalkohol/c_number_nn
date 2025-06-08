@@ -193,3 +193,8 @@ void read_biases(const char* filepath, const NeuronLayer* layer)
     }
     fclose(file);
 }
+
+void feedforward(NeuralNet* neural_net, double input[LAYER_1])
+{
+
+}
