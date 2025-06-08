@@ -3,4 +3,8 @@ project(c_number_nn C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(c_number_nn main.c)
+file(GLOB SOURCES "src/*.c")
+
+add_executable(c_number_nn ${SOURCES})
+
+target_include_directories(c_number_nn PRIVATE include)
