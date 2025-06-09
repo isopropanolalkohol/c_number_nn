@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "app.h"
+
 NeuralNet* instantiate_neural_net()
 {
     NeuralNet *net = malloc(sizeof(NeuralNet));
@@ -205,11 +207,16 @@ int feedforward(NeuralNet* neural_net, double input[LAYER_1])
         neural_net->layer1->neuronArray[i]->activation = input[i];
     }
     propagate(neural_net->layer1, neural_net->connection1_2, neural_net->layer2);
+    //printf("z1: %03f, %03f, %03f\n", neural_net->layer1->neuronArray[0]->activation, neural_net->layer1->neuronArray[1]->activation, neural_net->layer1->neuronArray[2]->activation);
+    //printf("a1: %03f, %03f, %03f\n", neural_net->layer2->neuronArray[0]->activation, neural_net->layer2->neuronArray[1]->activation, neural_net->layer2->neuronArray[2]->activation);
     propagate(neural_net->layer2, neural_net->connection2_3, neural_net->layer3);
+    //printf("z2: %03f, %03f, %03f\n", neural_net->layer2->neuronArray[0]->activation, neural_net->layer2->neuronArray[1]->activation, neural_net->layer2->neuronArray[2]->activation);
+    //printf("a2: %03f, %03f, %03f\n", neural_net->layer3->neuronArray[0]->activation, neural_net->layer3->neuronArray[1]->activation, neural_net->layer3->neuronArray[2]->activation);
     propagate(neural_net->layer3, neural_net->connection3_4, neural_net->layer4);
-
+    //printf("z3: %03f, %03f, %03f\n", neural_net->layer3->neuronArray[0]->activation, neural_net->layer3->neuronArray[1]->activation, neural_net->layer3->neuronArray[2]->activation);
+    //printf("a3: %03f, %03f, %03f\n", neural_net->layer4->neuronArray[0]->activation, neural_net->layer4->neuronArray[1]->activation, neural_net->layer4->neuronArray[2]->activation);
     int index = 0;
-    int max = 0;
+    double max = 0;
     for (int i = 0; i < LAYER_4; i++)
     {
         if (max < neural_net->layer4->neuronArray[i]->activation)
@@ -218,45 +225,23 @@ int feedforward(NeuralNet* neural_net, double input[LAYER_1])
             index = i;
         }
     }
+    if (max < 0.5) return 11;
     return index;
 }
 
 
 void propagate(NeuronLayer* lhs, ConnectionLayer* conn, NeuronLayer* rhs)
 {
-    // MATRIX (weights) * activations + bias -> sigmoid (holy fucking shit is this exhausting)
-    double* activation_vector = malloc(sizeof(double) * lhs->size);
-    for (int i = 0; i < lhs->size; i++)
-    {
-        activation_vector[i] = lhs->neuronArray[i]->activation;
-    }
-
-    double* weight_matrix = malloc(sizeof(double) * conn->size);
-    for (int i = 0; i < conn->size; i++)
-    {
-        weight_matrix[i] = conn->connectionArray[i]->weight;
-    }
-    double* result_vector = malloc(sizeof(double) * rhs->size);
-
+    double* result_vector = z_l(lhs, conn, rhs);
     for (int i = 0; i < rhs->size; i++)
     {
-        double sum = 0;
-        for (int j = 0; j < lhs->size; j++)
-        {
-            sum += activation_vector[j] * weight_matrix[lhs->size*i + j];
-        }
-        result_vector[i] = sum + rhs->neuronArray[i]->bias;
-    }
-    for (int i = 0; i < rhs->size; i++)
-    {
+
         rhs->neuronArray[i]->activation = sigmoid(result_vector[i]);
     }
     free(result_vector);
-    free(weight_matrix);
-    free(activation_vector);
 }
 
-double cost_function(NeuralNet* neural_net, int expected_value)
+double cost_function(const NeuralNet* neural_net, const int expected_value)
 {
     double sum = 0;
     for (int i = 0; i < LAYER_4; i++)
@@ -270,7 +255,169 @@ double cost_function(NeuralNet* neural_net, int expected_value)
     return sum;
 }
 
-void back_propagate(NeuralNet* neural_net, int expected_value)
+void back_propagate(const NeuralNet* neural_net, const int expected_value)
 {
+    gradCf* gradient = derivative(neural_net, expected_value);
+    for (int i = 0; i < LAYER_4; i++)
+    {
+        gradient->gradBiases_l3[i] *= ETA;
+    }
+    for (int i = 0; i < LAYER_4; i++)
+    {
+        neural_net->layer4->neuronArray[i]->bias -= gradient->gradBiases_l3[i];
+    }
+    for (int i = 0; i < LAYER_3; i++)
+    {
+        gradient->gradBiases_l2[i] *= ETA;
+    }
+    for (int i = 0; i < LAYER_3; i++)
+    {
+        neural_net->layer3->neuronArray[i]->bias -= gradient->gradBiases_l2[i];
+    }
+    for (int i = 0; i < LAYER_2; i++)
+    {
+        gradient->gradBiases_l1[i] *= ETA;
+    }
+    for (int i = 0; i < LAYER_2; i++)
+    {
+        neural_net->layer2->neuronArray[i]->bias -= gradient->gradBiases_l1[i];
+    }
+    for (int i = 0; i < neural_net->connection1_2->size; i++)
+    {
+        gradient->gradWeights_l1[i] *= ETA;
+    }
+    for (int i = 0; i < neural_net->connection1_2->size; i++)
+    {
+        neural_net->connection1_2->connectionArray[i]->weight -= gradient->gradWeights_l1[i];
+    }
+    for (int i = 0; i < neural_net->connection2_3->size; i++)
+    {
+        gradient->gradWeights_l2[i] *= ETA;
+    }
+    for (int i = 0; i < neural_net->connection2_3->size; i++)
+    {
+        neural_net->connection2_3->connectionArray[i]->weight -= gradient->gradWeights_l2[i];
+    }
+    for (int i = 0; i < neural_net->connection3_4->size; i++)
+    {
+        gradient->gradWeights_l3[i] *= ETA;
+    }
+    for (int i = 0; i < neural_net->connection3_4->size; i++)
+    {
+        neural_net->connection3_4->connectionArray[i]->weight -= gradient->gradWeights_l3[i];
+    }
+    free(gradient->gradBiases_l3);
+    free(gradient->gradBiases_l2);
+    free(gradient->gradBiases_l1);
+    free(gradient->gradWeights_l3);
+    free(gradient->gradWeights_l2);
+    free(gradient->gradWeights_l1);
+    free(gradient);
 
+    double mse = 0.0;
+    double max_activation = 0.0;
+    int max_index = 0;
+
+    for (int i = 0; i < LAYER_4; i++) {
+        double a = neural_net->layer4->neuronArray[i]->activation;
+        double y = (i == expected_value) ? 1.0 : 0.0;
+
+        double diff = a - y;
+        mse += diff * diff;
+
+        if (a > max_activation) {
+            max_activation = a;
+            max_index = i;
+        }
+    }
+
+    mse /= LAYER_4;
+
+    printf("Prediction: %d | Expected: %d | Max a: %.4f | MSE: %.6f\n",
+           max_index, expected_value, max_activation, mse);
+
+}
+
+
+void train(NeuralNet* neural_net, const char* filepath_image, const char* filepath_label)
+{
+    FILE *images = fopen(filepath_image, "r");
+    if (images == NULL)
+    {
+        perror("ERROR: Can't open image file.");
+        return;
+    }
+    FILE *label = fopen(filepath_label, "r");
+    if (label == NULL)
+    {
+        perror("ERROR: Can't open label file.");
+        return;
+    }
+    u_int8_t expected_number;
+    double image[GRID_SIZE][GRID_SIZE] = {0};
+    uint32_t magic, num_images, rows, cols;
+
+    fread(&magic, 4, 1, images);
+    fread(&num_images, 4, 1, images);
+    fread(&rows, 4, 1, images);
+    fread(&cols, 4, 1, images);
+    magic = reverse_uint32(magic);
+    num_images = reverse_uint32(num_images);
+    rows = reverse_uint32(rows);
+    cols = reverse_uint32(cols);
+
+    uint32_t magic2, num_labels;
+    fread(&magic2, 4, 1, label);
+    fread(&num_labels, 4, 1, label);
+
+    magic2 = reverse_uint32(magic2);
+    num_labels = reverse_uint32(num_labels);
+
+    u_int8_t* scanned_image = malloc(sizeof(u_int8_t)*rows*cols);
+    for (int i = 0; i < 10000; i++) //lets test so many images first
+    {
+        fread(scanned_image, 1, rows*cols, images);
+        fread(&expected_number, 1, 1, label);
+        for (int j = 0; j < rows; j++)
+        {
+            for (int k = 0; k < cols; k++)
+            {
+                image[j][k] = (double)scanned_image[j*cols + k]/255;
+            }
+        }
+        feedforward(neural_net, image);
+        back_propagate(neural_net, expected_number);
+    }
+    free(scanned_image);
+    fclose(images);
+    fclose(label);
+}
+
+void initialize_random(NeuralNet* neural_net)
+{
+    for (int i = 0; i < neural_net->connection1_2->size; i++)
+    {
+        neural_net->connection1_2->connectionArray[i]->weight = rand_uniform(-0.5f, 0.5f);
+    }
+    for (int i = 0; i < neural_net->connection2_3->size; i++)
+    {
+        neural_net->connection2_3->connectionArray[i]->weight = rand_uniform(-0.5f, 0.5f);
+    }
+    for (int i = 0; i < neural_net->connection3_4->size; i++)
+    {
+        neural_net->connection3_4->connectionArray[i]->weight = rand_uniform(-0.5f, 0.5f);
+    }
+
+    for (int i = 0; i < neural_net->layer4->size; i++)
+    {
+        neural_net->layer4->neuronArray[i]->bias = rand_uniform(-0.5f, 0.5f);
+    }
+    for (int i = 0; i < neural_net->layer3->size; i++)
+    {
+        neural_net->layer3->neuronArray[i]->bias = rand_uniform(-0.5f, 0.5f);
+    }
+    for (int i = 0; i < neural_net->layer2->size; i++)
+    {
+        neural_net->layer2->neuronArray[i]->bias = rand_uniform(-0.5f, 0.5f);
+    }
 }

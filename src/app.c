@@ -67,7 +67,8 @@ void app()
 
                     //Call feedforward function here:
                     int result = feedforward(neural_net, flat_input);
-                    printf("number: %d\n", result);
+                    if (result == 11) printf("unsure\n");
+                    else printf("number: %d\n", result);
                 }
 
                 if (event.key.keysym.sym == SDLK_c)
